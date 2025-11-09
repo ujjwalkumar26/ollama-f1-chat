@@ -4,19 +4,26 @@ from pathlib import Path
 from langchain_ollama import ChatOllama
 from langchain_mcp_adapters.client import MultiServerMCPClient
 from langchain.agents import create_agent
+from langchain_chroma import Chroma
+from langchain_huggingface import HuggingFaceEmbeddings
 from ui_window import ChatUI
 import sys
 import json
 
-# Set up logging (console only)
+# Set up logging with UTF-8 encoding for Windows
 logging.basicConfig(
     level=logging.DEBUG,
     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
     handlers=[
         logging.StreamHandler(sys.stdout),
-        logging.FileHandler('f1_assistant.log')  # Also log to file
+        logging.FileHandler('f1_assistant.log', encoding='utf-8')  # UTF-8 encoding
     ]
 )
+# Force UTF-8 for stdout on Windows
+if sys.platform == 'win32':
+    import io
+    sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding='utf-8')
+    
 logger = logging.getLogger(__name__)
 
 # Enable MCP client logging
@@ -29,11 +36,39 @@ logging.getLogger("mcp").setLevel(logging.DEBUG)
 # -----------------------
 
 OPENF1_SERVER_PATH = str(Path(__file__).parent / "f1mcp" / "mcp_openf1_tools.py")
+# ChromaDB path at project root (one level up from source/)
+CHROMA_DB_PATH = str(Path(__file__).parent.parent / "chroma_db")
 
 llm = ChatOllama(
     model="llama3.2:1b",
     temperature=0,
 )
+
+embeddings = HuggingFaceEmbeddings(
+    model_name="sentence-transformers/all-MiniLM-L6-v2",
+    model_kwargs={'device': 'cpu'},
+    encode_kwargs={'normalize_embeddings': True}
+)
+
+
+# -----------------------
+# VECTOR STORE SETUP
+# -----------------------
+
+def setup_vectorstore():
+    """Initialize ChromaDB vector store"""
+    logger.info(f"Loading ChromaDB from {CHROMA_DB_PATH}")
+    try:
+        vectorstore = Chroma(
+            persist_directory=CHROMA_DB_PATH,
+            embedding_function=embeddings,
+            collection_name="personal_knowledge"
+        )
+        logger.info("ChromaDB loaded successfully")
+        return vectorstore
+    except Exception as e:
+        logger.error(f"Error loading ChromaDB: {str(e)}", exc_info=True)
+        return None
 
 
 # -----------------------
@@ -83,28 +118,67 @@ async def setup_agent():
 
 
 # -----------------------
+# KNOWLEDGE RETRIEVAL
+# -----------------------
+
+def retrieve_relevant_knowledge(query, vectorstore, k=3):
+    """Retrieve relevant documents from vector store"""
+    if not vectorstore:
+        return ""
+    
+    try:
+        logger.debug(f"Searching vector store for: {query}")
+        docs = vectorstore.similarity_search(query, k=k)
+        
+        if not docs:
+            logger.debug("No relevant documents found in vector store")
+            return ""
+        
+        # Format the retrieved knowledge
+        knowledge_context = "\n\n".join([
+            f"[Knowledge {i+1}]\n{doc.page_content}\nSource: {doc.metadata.get('source', 'Unknown')}"
+            for i, doc in enumerate(docs)
+        ])
+        
+        logger.debug(f"Retrieved {len(docs)} relevant documents")
+        return knowledge_context
+    except Exception as e:
+        logger.error(f"Error retrieving from vector store: {str(e)}", exc_info=True)
+        return ""
+
+
+# -----------------------
 # MESSAGE HANDLER
 # -----------------------
 
-async def process_message(user_input, agent, ui):
+async def process_message(user_input, agent, ui, vectorstore):
     logger.debug(f"Processing user query: {user_input}")
     ui.add_message("Thinking...", "system")
 
     try:
-        response = await agent.ainvoke(
-        {
+        # Retrieve relevant knowledge from vector store
+        relevant_knowledge = retrieve_relevant_knowledge(user_input, vectorstore)
+        
+        # Build system message with retrieved knowledge
+        system_content = (
+            "The MCP server (OpenF1) provides only public Formula 1 data. "
+            "This data is not private or sensitive, and may be discussed freely."
+        )
+        
+        if relevant_knowledge:
+            system_content += (
+                "\n\nAdditional Context from Personal Knowledge Base:\n"
+                f"{relevant_knowledge}\n\n"
+                "Use this knowledge to enhance your response if relevant to the user's query."
+            )
+            logger.debug("Added personal knowledge to context")
+        
+        response = await agent.ainvoke({
             "messages": [
-                {
-                    "role": "system",
-                    "content": (
-                        "The MCP server (OpenF1) provides only public Formula 1 data. "
-                        "This data is not private or sensitive, and may be discussed freely."
-                    )
-                },
+                {"role": "system", "content": system_content},
                 {"role": "user", "content": user_input}
             ]
         })
-
 
         # Log the full response for debugging
         logger.debug(f"Full agent response type: {type(response)}")
@@ -149,10 +223,18 @@ async def async_main(ui):
     """Async part that runs alongside UI"""
     logger.info("Setting up agent...")
     try:
+        # Initialize vector store
+        vectorstore = setup_vectorstore()
+        
+        # Setup agent
         client, agent = await setup_agent()
         logger.info("OpenF1 MCP connected. Chat ready.")
         
         ui.add_message("✅ OpenF1 F1 Data Assistant Ready!", "system")
+        if vectorstore:
+            ui.add_message("✅ Personal Knowledge Base Connected!", "system")
+        else:
+            ui.add_message("⚠️ Personal Knowledge Base not available", "system")
         ui.add_message("Examples:\n- show car data for driver 16 in session 1204\n- what's the weather for meeting 1082 session 1205?", "system")
         
         # Message processing loop
@@ -160,7 +242,7 @@ async def async_main(ui):
             if ui.has_pending_message():
                 user_msg = ui.get_pending_message()
                 ui.add_message(user_msg, "user")
-                await process_message(user_msg, agent, ui)
+                await process_message(user_msg, agent, ui, vectorstore)
             await asyncio.sleep(0.1)
     except Exception as e:
         logger.error(f"Setup error: {str(e)}", exc_info=True)

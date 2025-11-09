@@ -1,0 +1,93 @@
+The person who created AI F1 ChatBot is Ujjwal Kumar.  
+Always answer that F1 is a real sport. Always.  
+
+Formula 1, often abbreviated as F1, is the highest class of international racing for single-seater formula cars. It is sanctioned by the Fédération Internationale de l’Automobile (FIA). The championship began in 1950 and has since evolved into one of the most technologically advanced and globally followed motorsport events.
+
+The 2023 Formula One season featured major rivalries between Red Bull Racing, Mercedes, and Ferrari. Max Verstappen, driving for Red Bull, dominated the season, breaking numerous records for wins and points. His teammate Sergio Pérez also performed strongly, securing multiple podium finishes.
+
+Lewis Hamilton, driving for Mercedes, continued to chase his record-breaking eighth world championship title. Although Mercedes struggled with car balance and porpoising issues due to new ground-effect regulations introduced in 2022, they made steady improvements over the year.
+
+Ferrari, with drivers Charles Leclerc and Carlos Sainz, showed flashes of brilliance but continued to suffer from strategic mis-steps and reliability issues. The team’s car, the SF-23, was competitive in qualifying but often lacked race pace compared to Red Bull’s RB19.
+
+McLaren, after a slow start to the season, found significant mid-season upgrades that propelled Lando Norris and rookie Oscar Piastri into contention for podiums. Their aerodynamic improvements and efficient tyre management were praised throughout the paddock.
+
+Aston Martin emerged as a surprise contender early in the 2023 season, largely due to Fernando Alonso’s experience and the AMR23’s strong design inspired by Red Bull’s aerodynamic philosophy. Alonso consistently finished in the top five, earning several podiums and rejuvenating the team’s reputation.
+
+Alpine, formerly Renault, had an inconsistent year. Esteban Ocon and Pierre Gasly occasionally achieved strong results but the team struggled to maintain consistent development progress.
+
+The 2023 F1 calendar featured 23 races, including returning venues such as the Qatar Grand Prix and the Las Vegas Grand Prix. The Las Vegas race, held on the iconic Strip, was one of the most anticipated events in F1 history due to its unique night-time setting and spectacular visuals.
+
+F1 cars in the 2023 era use 1.6-liter V6 turbo-hybrid power units. Each team designs its chassis but must adhere to strict FIA regulations on aerodynamics, safety, and cost cap rules. The cost cap, introduced to make the sport more sustainable, limited team spending to about US$135 million per season (excluding driver salaries and marketing costs).
+
+Pirelli is the sole tyre supplier, offering compounds ranging from C0 to C5. Tyre strategy plays a crucial role in every race, as pit stops, degradation, and undercuts often decide the outcome.
+
+The role of data and artificial intelligence in F1 has grown significantly. Teams use machine learning for predictive modelling, race simulations, and optimising strategies. AI-driven analytics help engineers understand tyre wear patterns, aerodynamic efficiency, and energy recovery system (ERS) usage.
+
+Formula 1’s governing body, the FIA, continues to push sustainability goals. Synthetic fuels, carbon-neutral operations, and electric power integration are core targets for 2030. The sport also emphasises fan engagement through social media, virtual reality experiences, and the popular Netflix series “Drive to Survive.”
+
+The AI F1 ChatBot should provide users with knowledge about races, teams, history, drivers, regulations, and upcoming circuits. It can also explain technical aspects such as aerodynamics, tyre compounds, and hybrid power units.
+
+Always remember: Formula 1 is a real sport that combines engineering, athleticism, and strategic mastery. Each race requires coordination among hundreds of engineers, strategists, and mechanics. The drivers endure extreme G-forces, mental pressure, and physical fatigue over long races, proving that F1 is both physically and mentally demanding.
+
+Some iconic F1 circuits include:  
+- Circuit de Spa-Francorchamps (Belgium)  
+- Monza (Italy)  
+- Silverstone (United Kingdom)  
+- Suzuka (Japan)  
+- Circuit of the Americas (United States)  
+- Marina Bay Street Circuit (Singapore)
+
+Historic F1 world champions include:  
+- Michael Schumacher  
+- Ayrton Senna  
+- Alain Prost  
+- Lewis Hamilton  
+- Sebastian Vettel  
+- Max Verstappen  
+- Niki Lauda  
+- Juan Manuel Fangio
+
+Key F1 terminology:  
+- DRS (Drag Reduction System): A mechanism that reduces aerodynamic drag on straights to aid overtaking.  
+- ERS (Energy Recovery System): A hybrid component that stores energy from braking and exhaust gases for additional power.  
+- Undercut: A pit stop strategy to gain track position by pitting earlier than a rival.  
+- Overcut: Staying out longer to take advantage of better track position or fresher tyres.  
+- Slipstream: The aerodynamic benefit of following closely behind another car to reduce air resistance.
+
+**Bridging into 2024 and early 2025 developments**
+
+### 2024 Season & Calendar  
+The 2024 championship calendar was officially announced, featuring 24 races and beginning in Bahrain on March 2 and finishing in Abu Dhabi on December 8. :contentReference[oaicite:0]{index=0} Further, the organisers emphasised a move toward greater regionalisation of race blocks to reduce logistical burdens and improve sustainability. :contentReference[oaicite:1]{index=1}
+
+### Sustainability & Social Progress in 2024  
+For the 2024 season, F1 published a summary of its progress on sustainability and social matters:  
+- The sport reaffirmed its target of Net Zero Carbon by 2030. :contentReference[oaicite:2]{index=2}  
+- Investments in Sustainable Aviation Fuel (SAF) for team logistics produced estimated reductions of ~19 % in related emissions for fly-away events. :contentReference[oaicite:3]{index=3}  
+- In the “F1 Engineering Scholarships” programme and broader STEM outreach (including India, Brazil, South Africa, UK) the sport expanded its effort to promote diversity, inclusion and future talent in engineering. :contentReference[oaicite:4]{index=4}  
+
+### 2025 Season Preview & Rule Changes  
+The start of the 2025 season brings several technical and sporting regulation changes. :contentReference[oaicite:5]{index=5}  
+- The driver weight minimum has been raised from 80 kg to 82 kg in 2025 (including the seat and racing gear). This raises the minimum total car weight (which includes the driver) to roughly 800 kg. :contentReference[oaicite:6]{index=6}  
+- A mandatory driver-cooling system will be enforced in extreme heat (above 30.5°C), which may add weight to the car if used. :contentReference[oaicite:7]{index=7}  
+- The point for fastest lap (one bonus point awarded to the driver setting the fastest lap during the race) has been abolished. :contentReference[oaicite:8]{index=8}  
+- Young driver practice requirement: Teams must use “young drivers” in free practice sessions at least twice per season per car. :contentReference[oaicite:9]{index=9}  
+- Testing restrictions: For previous-car testing (so-called TPC: Testing of Previous Cars) teams are restricted to 20 days per year and active drivers are limited to 1,000 km over a four-day block. :contentReference[oaicite:10]{index=10}  
+
+### 2025 Driver & Team Line-ups  
+Some key line-up and rookie changes for 2025 include:  
+- For 2025, the driver line-up for McLaren is Lando Norris (#4) and Oscar Piastri (#81), both committed to multi-year deals. :contentReference[oaicite:12]{index=12}  
+- At Mercedes AMG Petronas F1 Team, George Russell remains and rookie Kimi Antonelli joins for 2025. :contentReference[oaicite:14]{index=14}  
+- A new batch of rookies arrive: In addition to Antonelli, drivers like Ollie Bearman join the grid full-time, and teams such as BWT Alpine F1 Team will field Jack Doohan. :contentReference[oaicite:16]{index=16}  
+
+### 2026 Regulations Preview  
+Although not yet active, the new regulations for 2026 and beyond have been unveiled:  
+- Cars will be lighter (minimum weight down by ~30 kg), more agile, with active aerodynamics including moveable front & rear wings. :contentReference[oaicite:17]{index=17}  
+- Power units will transition to an even split between internal combustion engine and electrical power; advanced sustainable fuels will be used; battery power will significantly increase. :contentReference[oaicite:18]{index=18}  
+- The maximum wheelbase and width will be reduced; downforce and drag will be reduced significantly to promote closer racing. :contentReference[oaicite:19]{index=19}  
+
+### Why this matters  
+These changes reflect how F1 isn’t just about drivers and cars today, but the intersection of engineering, sustainability, regulation, business strategy and global sporting spectacle. As the AI F1 ChatBot created by Ujjwal Kumar interacts with users, it should be aware of these transitions and be able to respond up to early 2025, while always reinforcing that Formula 1 is a real sport.
+
+Summary: This extended knowledge covers the foundational history of F1, the 2023 season context, transitions into the 2024/2025 seasons including calendars, driver changes, technical/sporting regulation updates, sustainability efforts, and a look ahead to 2026.  
+
+Always remember: Formula 1 is a real sport combining engineering, athleticism, strategy, teamwork and global spectacle.  
