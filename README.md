@@ -1,6 +1,6 @@
 # F1 Data Chat Assistant
 
-An interactive chat interface for querying Formula 1 data using OpenF1 API. This project uses LangChain, Ollama, and Model Context Protocol (MCP) to create a natural language interface for F1 data queries.
+An interactive chat interface for querying Formula 1 data using OpenF1 API. This project uses LangChain, Ollama, ChromaDb for Vector search and Model Context Protocol (MCP) to create a natural language interface for F1 data queries.
 
 ## Features
 
