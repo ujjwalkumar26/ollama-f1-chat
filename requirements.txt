@@ -1,0 +1,19 @@
+# Core LangChain ecosystem
+langchain>=0.3.0
+langchain-ollama>=0.1.2
+langchain-mcp-adapters>=0.1.0
+
+# MCP server runtime
+mcp>=0.4.2
+
+# Ollama local model interface
+ollama>=0.3.0
+
+# HTTP requests for OpenF1 API calls
+requests>=2.31.0
+
+# Typing utilities (for Python 3.14+ compatibility)
+typing-extensions>=4.12.0
+
+# UI - tkinter is built into Python, no need to install
+# (tkinter comes with standard Python installation)
