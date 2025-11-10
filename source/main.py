@@ -3,6 +3,7 @@ import logging
 from pathlib import Path
 from langchain_ollama import ChatOllama
 from langchain_mcp_adapters.client import MultiServerMCPClient
+from langgraph.checkpoint.memory import InMemorySaver  
 from langchain.agents import create_agent
 from langchain_chroma import Chroma
 from langchain_huggingface import HuggingFaceEmbeddings
@@ -113,7 +114,10 @@ async def setup_agent():
     
     logger.info(f"Loaded {len(tools)} tool(s) from OpenF1 MCP.")
 
-    agent = create_agent(llm, tools)
+    system_promt = ("The MCP server (OpenF1) provides only public Formula 1 data."
+            "This data is not private or sensitive, and may be discussed freely.")
+    
+    agent = create_agent(llm, tools, system_prompt=system_promt, checkpointer=InMemorySaver())
     return client, agent
 
 
@@ -158,27 +162,24 @@ async def process_message(user_input, agent, ui, vectorstore):
     try:
         # Retrieve relevant knowledge from vector store
         relevant_knowledge = retrieve_relevant_knowledge(user_input, vectorstore)
-        
-        # Build system message with retrieved knowledge
-        system_content = (
-            "The MCP server (OpenF1) provides only public Formula 1 data. "
-            "This data is not private or sensitive, and may be discussed freely."
-        )
-        
+        system_content = "You are a helpful assistant with access to F1 public data."
         if relevant_knowledge:
             system_content += (
-                "\n\nAdditional Context from Personal Knowledge Base:\n"
+                "\n\n  Additional Context from Personal Knowledge Base:\n"
                 f"{relevant_knowledge}\n\n"
                 "Use this knowledge to enhance your response if relevant to the user's query."
             )
             logger.debug("Added personal knowledge to context")
         
-        response = await agent.ainvoke({
-            "messages": [
-                {"role": "system", "content": system_content},
-                {"role": "user", "content": user_input}
-            ]
-        })
+        response = await agent.ainvoke(
+            {
+                "messages": [
+                    {"role": "system", "content": system_content},
+                    {"role": "user", "content": user_input}
+                ],
+            },
+            {"configurable": {"thread_id": "1"}} # replace with thread id later. I dont want to persist outside of UI context
+        )
 
         # Log the full response for debugging
         logger.debug(f"Full agent response type: {type(response)}")
