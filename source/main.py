@@ -7,6 +7,8 @@ from langgraph.checkpoint.memory import InMemorySaver
 from langchain.agents import create_agent
 from langchain_chroma import Chroma
 from langchain_huggingface import HuggingFaceEmbeddings
+from langchain_community.tools import DuckDuckGoSearchRun
+from langchain_core.tools import Tool
 from ui_window import ChatUI
 import sys
 import json
@@ -17,7 +19,7 @@ logging.basicConfig(
     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
     handlers=[
         logging.StreamHandler(sys.stdout),
-        logging.FileHandler('f1_assistant.log', encoding='utf-8')  # UTF-8 encoding
+        logging.FileHandler('f1_assistant.log', encoding='utf-8')
     ]
 )
 # Force UTF-8 for stdout on Windows
@@ -37,12 +39,11 @@ logging.getLogger("mcp").setLevel(logging.DEBUG)
 # -----------------------
 
 OPENF1_SERVER_PATH = str(Path(__file__).parent / "f1mcp" / "mcp_openf1_tools.py")
-# ChromaDB path at project root (one level up from source/)
 CHROMA_DB_PATH = str(Path(__file__).parent.parent / "chroma_db")
 
 llm = ChatOllama(
     model="llama3.2:1b",
-    temperature=0,
+    temperature=0.5,
 )
 
 embeddings = HuggingFaceEmbeddings(
@@ -76,16 +77,43 @@ def setup_vectorstore():
 # MAIN AGENT SETUP
 # -----------------------
 
+def get_search_tool():
+    """Initialize DuckDuckGo search tool"""
+    search = DuckDuckGoSearchRun()
+    return Tool(
+        name="Internet Search",
+        func=search.run,
+        description="Useful for searching information on the internet. Use this when you need to find current or factual Formula 1 information. Do not use for anything other than F1/Formula 1 related queries.",
+    )
+
+def get_system_prompt():
+    """Return the system prompt as a plain string"""
+    return """You are a helpful Formula 1 assistant with access to F1 public data through specialized tools.
+            Your role:
+            - Answer Formula 1 related questions using the available tools
+            - Use the OpenF1 API tools to fetch real-time F1 data (sessions, drivers, meetings, etc.)
+            - Use Internet Search for current F1 news and information not available in the API
+            - Provide accurate, factual information about Formula 1
+
+            Guidelines:
+            - Always check if you have relevant knowledge before using tools
+            - Use tools when you need specific data or current information
+            - Be concise and informative in your responses
+            - If you're unsure, say so rather than making up information
+            - When a tool returns results, YOU MUST USE THEM in your answer
+
+            The MCP server (OpenF1) provides only public Formula 1 data. This data is not private or sensitive, and may be discussed freely."""
+
+
 async def setup_agent():
     client = MultiServerMCPClient(
         {
-            "openf1": {
+            "Openf1API": {
                 "transport": "stdio",
                 "command": "python",
                 "args": [OPENF1_SERVER_PATH],
-                # Enable stderr capture for MCP server logs
                 "env": {
-                    "PYTHONUNBUFFERED": "1",  # Disable Python buffering
+                    "PYTHONUNBUFFERED": "1",
                 }
             },
         }
@@ -93,6 +121,7 @@ async def setup_agent():
 
     logger.info("Loading MCP tools from OpenF1 server...")
     tools = await client.get_tools()
+    tools.append(get_search_tool())
     logger.debug(f"Loaded MCP tools: {[tool.name for tool in tools]}")
     
     # Log tool schemas for debugging
@@ -100,13 +129,10 @@ async def setup_agent():
         logger.debug(f"Tool: {tool.name}")
         logger.debug(f"  Description: {tool.description}")
         
-        # Handle both dict and Pydantic model schemas
         if hasattr(tool, 'args_schema'):
             if hasattr(tool.args_schema, 'schema'):
-                # Pydantic model
-                schema = tool.args_schema.schema()
+                schema = tool.args_schema.model_json_schema()
             else:
-                # Already a dict
                 schema = tool.args_schema
             logger.debug(f"  Schema: {json.dumps(schema, indent=2)}")
         else:
@@ -114,10 +140,15 @@ async def setup_agent():
     
     logger.info(f"Loaded {len(tools)} tool(s) from OpenF1 MCP.")
 
-    system_promt = ("The MCP server (OpenF1) provides only public Formula 1 data."
-            "This data is not private or sensitive, and may be discussed freely.")
-    
-    agent = create_agent(llm, tools, system_prompt=system_promt, checkpointer=InMemorySaver())
+    # Get the system prompt as a string
+    system_prompt = get_system_prompt()
+
+    agent = create_agent(
+        llm,
+        tools,
+        system_prompt=system_prompt,  # Pass as string, not template
+        checkpointer=InMemorySaver(),
+    )
     return client, agent
 
 
@@ -162,23 +193,25 @@ async def process_message(user_input, agent, ui, vectorstore):
     try:
         # Retrieve relevant knowledge from vector store
         relevant_knowledge = retrieve_relevant_knowledge(user_input, vectorstore)
-        system_content = "You are a helpful assistant with access to F1 public data."
+        
+        # Build the user message with context if available
+        user_message = user_input
         if relevant_knowledge:
-            system_content += (
-                "\n\n  Additional Context from Personal Knowledge Base:\n"
-                f"{relevant_knowledge}\n\n"
-                "Use this knowledge to enhance your response if relevant to the user's query."
-            )
-            logger.debug("Added personal knowledge to context")
+            user_message = f"""Context from Personal Knowledge Base (data up to 2023):
+            {relevant_knowledge}
+
+            User Question: {user_input}
+
+            Please use the above context if relevant to answer the question."""
+            logger.debug("Added personal knowledge to user message")
         
         response = await agent.ainvoke(
             {
                 "messages": [
-                    {"role": "system", "content": system_content},
-                    {"role": "user", "content": user_input}
+                    {"role": "user", "content": user_message}
                 ],
             },
-            {"configurable": {"thread_id": "1"}} # replace with thread id later. I dont want to persist outside of UI context
+            {"configurable": {"thread_id": "1"}}
         )
 
         # Log the full response for debugging

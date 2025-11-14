@@ -25,3 +25,4 @@ pypdf>=3.17.0
 
 # Additional utilities
 pydantic>=2.0.0
+ddgs
